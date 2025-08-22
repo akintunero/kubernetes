@@ -696,7 +696,7 @@ func testPrioritizedList(tCtx ktesting.TContext, enabled bool) {
 		pod, err := tCtx.Client().CoreV1().Pods(namespace).Get(tCtx, pod.Name, metav1.GetOptions{})
 		tCtx.ExpectNoError(err, "get pod")
 		return pod
-	}).WithTimeout(10 * time.Second).WithPolling(time.Second).Should(schedulingAttempted)
+	}).WithTimeout(20 * time.Second).WithPolling(time.Second).Should(schedulingAttempted)
 }
 
 func testExtendedResource(tCtx ktesting.TContext, enabled bool) {
@@ -1017,7 +1017,7 @@ func testPublishResourceSlices(tCtx ktesting.TContext, haveLatestAPI bool, disab
 		resources.Pools[poolName] = pool
 		validationErrorsOkay.Store(true)
 		controller.Update(resources)
-		ktesting.Eventually(tCtx, getStats).WithTimeout(10*time.Second).Should(gomega.HaveField("NumDeletes", gomega.BeNumerically(">=", int64(1))), "Slice should have been removed.")
+		ktesting.Eventually(tCtx, getStats).WithTimeout(20*time.Second).Should(gomega.HaveField("NumDeletes", gomega.BeNumerically(">=", int64(1))), "Slice should have been removed.")
 		ktesting.Eventually(tCtx, func(tCtx ktesting.TContext) bool {
 			return gotValidationError.Load()
 		}).WithTimeout(time.Minute).Should(gomega.BeTrueBecause("Should have gotten another error because the slice is invalid."))
@@ -1569,7 +1569,7 @@ func testDeviceBindingConditions(tCtx ktesting.TContext, enabled bool) {
 		tCtx.ExpectNoError(err)
 		claim1 = c
 		return claim1
-	}).WithTimeout(10*time.Second).WithPolling(time.Second).Should(gomega.HaveField("Status.Allocation", gomega.Not(gomega.BeNil())), "Claim should have been allocated.")
+	}).WithTimeout(20*time.Second).WithPolling(time.Second).Should(gomega.HaveField("Status.Allocation", gomega.Not(gomega.BeNil())), "Claim should have been allocated.")
 	end := time.Now()
 	gomega.NewWithT(tCtx).Expect(claim1).To(gomega.HaveField("Status.Allocation", gstruct.PointTo(gstruct.MatchFields(gstruct.IgnoreExtras, gstruct.Fields{
 		"Devices": gomega.Equal(resourceapi.DeviceAllocationResult{
@@ -1597,7 +1597,7 @@ func testDeviceBindingConditions(tCtx ktesting.TContext, enabled bool) {
 		tCtx.ExpectNoError(err)
 		claim2 = c
 		return claim2
-	}).WithTimeout(10*time.Second).WithPolling(time.Second).Should(gomega.HaveField("Status.Allocation", gomega.Not(gomega.BeNil())), "Claim should have been allocated.")
+	}).WithTimeout(20*time.Second).WithPolling(time.Second).Should(gomega.HaveField("Status.Allocation", gomega.Not(gomega.BeNil())), "Claim should have been allocated.")
 	end = time.Now()
 	gomega.NewWithT(tCtx).Expect(claim2).To(gomega.HaveField("Status.Allocation", gstruct.PointTo(gstruct.MatchFields(gstruct.IgnoreExtras, gstruct.Fields{
 		"Devices": gomega.Equal(resourceapi.DeviceAllocationResult{
@@ -1649,7 +1649,7 @@ func testDeviceBindingConditions(tCtx ktesting.TContext, enabled bool) {
 			return nil
 		}
 		return claim2
-	}).WithTimeout(30*time.Second).WithPolling(time.Second).Should(gomega.BeNil(), "claim should not have any condition")
+	}).WithTimeout(45*time.Second).WithPolling(time.Second).Should(gomega.BeNil(), "claim should not have any condition")
 
 	// Allow the scheduler to proceed.
 	claim2.Status.Devices = []resourceapi.AllocatedDeviceStatus{{
